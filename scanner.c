@@ -1,18 +1,7 @@
-/******** scanner.c *********
- *
- * Implementace překladače imperativního jazyka IFJ20.
- *
- * Authors: Adrián Matušík, xmatus35
- *          Marián Zimmermann, xzimme03
- *
- */
-
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
-#include "str.h"
 #include "scanner.h"
 
 //ErrorCodes
@@ -26,3 +15,16 @@
 #define ERR_SEMANTIC 7      // ostatní sémantické chyby      
 #define ERR_ZERODIV 9       // chyba dělení nulovou konstantou     
 #define ERR_INTERPRET 99    // chyba překladače
+
+typedef struct
+{
+    char* str;		// místo pro daný řetězec ukončený '\0'
+    int length;		// délka řetězce
+    int allocSize;	// velikost alokované paměti
+} string;
+
+int strInit(string* s);
+void strFree(string* s);
+void strClear(string* s);
+int strAddChar(string* s1, char c);
+int strCmpConstStr(string* s1, char* s2);
