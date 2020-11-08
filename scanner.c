@@ -1,3 +1,13 @@
+/******** scanner.c *********
+ *
+ * Implementace překladače imperativního jazyka IFJ20.
+ *
+ * Authors: Adrián Matušík, xmatus35
+ *          Marián Zimmermann, xzimme03
+ *
+ */
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
