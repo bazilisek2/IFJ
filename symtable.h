@@ -13,7 +13,6 @@ typedef struct symtable {
 void TInit(symtablePtr*);
 int TSearch(symtablePtr, char, void*);
 void TInsert(symtablePtr*, char, void);
-void TDelete(symtablePtr*, char);
 void TDispose(symtablePtr*);
 
 #endif 
