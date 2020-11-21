@@ -1,20 +1,3 @@
-/*
- *
- *  Implementace prekladace imperativniho jazyka IFJcode18
- *
- *
- *
- *  symtable.c
- *
- *
- *  xvacul30 - Jan Vaculik
- *
- *  xmensi13 - Jan Mensik
- *
- *
- *
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -147,9 +130,9 @@ tNode * tableSearch(tSymbolTable *T, tNode *active, string *key)
 int is_defined(tSymbolTable *T, tNode *active, string *key){
     tNode * var = tableSearch(T, active, key);
     if ((var->defined) == TRUE){
-        return TRUE;
+        return 1;
     }
-    return FALSE;
+    return 0;
 }
 
 
@@ -172,7 +155,7 @@ tParams * add_param(tSymbolTable *T, tNode *active, string *key){
         }
     }
 
-    //nejaky tam už je
+    //nejaky tam uĹľ je
     else if (var->data.p_first != NULL){
       tParams * temp = var->data.p_first;
       tParams * previous = NULL;
@@ -225,15 +208,90 @@ tParams * get_param(tSymbolTable *T, tNode *active, string *key, int param_numbe
     return NULL;
 }
 
+tReturn * add_return(tSymbolTable *T, tNode *active, string *key){
+    tNode * var = tableSearch(T, active, key);
+    if (var->data.r_first == NULL){ //prvy return
+        tReturn * ret = malloc(sizeof(struct tReturn));
+        if (ret == NULL){
+            return NULL;
+        }
+
+        else {
+            ret->order = 1;
+            ret->type = EMPTY;
+            ret->next = NULL;
+            var->data.r_first = ret;
+            var->data.return_num++;
+            return ret;
+        }
+    }
+
+    //nejaky tam uz je
+    else if (var->data.r_first != NULL){
+      tReturn * temp = var->data.r_first;
+      tReturn * previous = NULL;
+      int order = 1;
+      int return_count = 1;
+      while (temp != NULL){
+          previous = temp;
+          temp = temp->next;
+          order ++;
+          return_count++;
+
+      }
+      temp = malloc(sizeof(struct tReturn));
+        if (temp == NULL){
+            return NULL;
+        }
+        else {
+            previous->next = temp; //napojenie
+            temp->order = order;
+            temp->type = EMPTY;
+            temp->next = NULL;
+            var->data.return_num++;
+            return temp;
+
+        }
+ 
+    }
+
+    return NULL;     
+}
 
 
+tReturn * get_return(tSymbolTable *T, tNode *active, string *key, int return_number)
+{
+    tNode * var = tableSearch(T, active, key);
+    if (var->data.return_num < return_number){
+        DEBUG_MODE("Tolko argumentov funkcia nema")
+        return NULL;
+    }
+    else {
+        tReturn * temp = var->data.r_first;
+        int order = 1;
+        while (order != return_number){
+            temp = temp->next;
+            order++;
+        }
+        return temp;
+    }
+    return NULL;
+}
 
+void tableDelete (tSymbolTable *T,tNode *active)
+{
+	if (T == NULL) 
+		return;
+	if(active == NULL)
+	 	return;
 
-
-
-
-
-
-
-
-
+	if (active != NULL) 
+	{
+		tableDelete(T, active->lptr);
+		tableDelete(T, active->rptr);
+		free(active);
+	}
+	T->root = NULL;
+	T->next = NULL;
+	T->previous = NULL;
+}
