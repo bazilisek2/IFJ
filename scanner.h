@@ -37,7 +37,14 @@
 #define LEX_ERROR 99
 #define IDENTIFIER 60
 #define END_OF_FILE 61
-
+#define PRINT 70
+#define INT2FLOAT 71
+#define LEN 72
+#define SUBSTR 73
+#define ORD 74
+#define INPUTS 75
+#define INPUTI 76
+#define INPUTF 77
 int find_eol();
 int get_token(int mode, int * flag, string *strtmp);
 
