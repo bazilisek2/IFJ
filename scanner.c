@@ -52,10 +52,10 @@ int find_eol(){
 
 
 
-//v mode GET token buffer rovno vrati, PEEK ho ulozi a vrati pri dalsom zavolani 
+//v mode GET token buffer rovno vrati, PEEK ho ulozi a vrati pri dalsom zavolani
 int get_token(int mode, int * flag, string *strtmp)
 
-{   
+{
     if (buffer!= EMPTY){
         int return_value = buffer;
         if (mode == GET){
@@ -65,7 +65,7 @@ int get_token(int mode, int * flag, string *strtmp)
     }
 
     T_state state = START;
-    
+
     char hexc[3];
     int hexo=0;
     int c;
@@ -73,27 +73,27 @@ int get_token(int mode, int * flag, string *strtmp)
     int floatcheck=0;
     *flag = NO_EOL;
 
-    strClear(strtmp);   
-    
-    
+    strClear(strtmp);
+
+
     while (1)
     {
-        
+
         c = fgetc(stdin);
-        
+
         switch (state)
         {
             case START:
             if (isspace(c)) {
                 if (c == '\n'){
-                    *flag = EOL_FOUND; 
+                    *flag = EOL_FOUND;
                 }
                 state = START;
             }
             else if (c == '\n') {
                 if (mode == PEEK){
                     buffer = EOL;
-                    } 
+                    }
                 return EOL;
             }
             else if (c=='/') {
@@ -102,25 +102,25 @@ int get_token(int mode, int * flag, string *strtmp)
             else if (c==EOF) {
                 if (mode == PEEK){
                     buffer = END_OF_FILE;
-                    } 
+                    }
                 return (END_OF_FILE);
             }
             else if (c=='+') {
                 if (mode == PEEK){
                     buffer = PLUS;
-                    } 
+                    }
                 return (PLUS);
             }
             else if (c=='-') {
                 if (mode == PEEK){
                     buffer = MINUS;
-                    } 
+                    }
                 return (MINUS);
             }
             else if (c=='*') {
                 if (mode == PEEK){
                     buffer = MULTIPLICATION;
-                    } 
+                    }
                 return (MULTIPLICATION);
             }
             else if (c=='!' || c=='<' || c=='>') {
@@ -134,37 +134,37 @@ int get_token(int mode, int * flag, string *strtmp)
             else if (c=='(') {
                 if (mode == PEEK){
                     buffer = L_BRACKET;
-                    } 
+                    }
                 return (L_BRACKET);
             }
             else if (c==')') {
                 if (mode == PEEK){
                     buffer = R_BRACKET;
-                    } 
+                    }
                 return (R_BRACKET);
             }
             else if (c=='{') {
                 if (mode == PEEK){
                     buffer = L_BRACKET1;
-                    } 
+                    }
                 return (L_BRACKET1);
             }
             else if (c=='}') {
                 if (mode == PEEK){
                     buffer = R_BRACKET1;
-                    } 
+                    }
                 return (R_BRACKET1);
             }
             else if (c==',') {
                 if (mode == PEEK){
                     buffer = COMA;
-                    } 
+                    }
                 return (COMA);
             }
             else if (c==';') {
                 if (mode == PEEK){
                     buffer = UNDERSCORE;
-                    } 
+                    }
                 return (UNDERSCORE);
             }
             else if (c=='_') {
@@ -189,7 +189,7 @@ int get_token(int mode, int * flag, string *strtmp)
             else {
                 if (mode == PEEK){
                     buffer = LEX_ERROR;
-                    } 
+                    }
                 return LEX_ERROR;
             }
             break;
@@ -206,31 +206,31 @@ int get_token(int mode, int * flag, string *strtmp)
                     if (strCmpConstStr(strtmp,"else")==0) {
                         if (mode == PEEK){
                             buffer = ELSE;
-                        } 
+                        }
                         return (ELSE);
                     }
                     else if (strCmpConstStr(strtmp,"float64")==0) {
                         if (mode == PEEK){
                             buffer = FLOAT64;
-                        }                         
+                        }
                         return (FLOAT64);
                     }
                     else if (strCmpConstStr(strtmp,"for")==0) {
                         if (mode == PEEK){
                             buffer = FOR;
-                        }     
+                        }
                         return (FOR);
                     }
                     else if (strCmpConstStr(strtmp,"func")==0) {
                         if (mode == PEEK){
                             buffer = FUNC;
-                        }                             
+                        }
                         return (FUNC);
                     }
                     else if (strCmpConstStr(strtmp,"if")==0) {
                         if (mode == PEEK){
                             buffer = IF;
-                        }  
+                        }
                         return (IF);
                     }
                     else if (strCmpConstStr(strtmp,"int")==0) {
@@ -248,19 +248,67 @@ int get_token(int mode, int * flag, string *strtmp)
                     else if (strCmpConstStr(strtmp,"return")==0) {
                         if (mode == PEEK){
                             buffer = RETURN;
-                        }                        
+                        }
                         return (RETURN);
                     }
                     else if (strCmpConstStr(strtmp,"string")==0) {
                         if (mode == PEEK){
                             buffer = STRING_T;
-                        }                        
+                        }
                         return (STRING_T);
+                    }
+                    else if (strCmpConstStr(strtmp,"print")==0) {
+                        if (mode == PEEK){
+                            buffer = PRINT;
+                        }
+                        return (PRINT);
+                    }
+                    else if (strCmpConstStr(strtmp,"int2float")==0) {
+                        if (mode == PEEK){
+                            buffer = INT2FLOAT;
+                        }
+                        return (INT2FLOAT);
+                    }
+                    else if (strCmpConstStr(strtmp,"len")==0) {
+                        if (mode == PEEK){
+                            buffer = LEN;
+                        }
+                        return (LEN);
+                    }
+                    else if (strCmpConstStr(strtmp,"substr")==0) {
+                        if (mode == PEEK){
+                            buffer = SUBSTR;
+                        }
+                        return (SUBSTR);
+                    }
+                    else if (strCmpConstStr(strtmp,"ord")==0) {
+                        if (mode == PEEK){
+                            buffer = ORD;
+                        }
+                        return (ORD);
+                    }
+                    else if (strCmpConstStr(strtmp,"inputs")==0) {
+                        if (mode == PEEK){
+                            buffer = INPUTS;
+                        }
+                        return (INPUTS);
+                    }
+                    else if (strCmpConstStr(strtmp,"inputi")==0) {
+                        if (mode == PEEK){
+                            buffer = INPUTI;
+                        }
+                        return (INPUTI);
+                    }
+                    else if (strCmpConstStr(strtmp,"inputf")==0) {
+                        if (mode == PEEK){
+                            buffer = INPUTF;
+                        }
+                        return (INPUTF);
                     }
                     else {
                         if (mode == PEEK){
                             buffer = IDENTIFIER;
-                        }   
+                        }
                         return (IDENTIFIER);
                     }
                 }
@@ -311,7 +359,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     ungetc(c, stdin);
                     if (mode == PEEK){
                         buffer = INT;
-                    }   
+                    }
                     return INT;
                 }
             break;
@@ -337,7 +385,7 @@ int get_token(int mode, int * flag, string *strtmp)
                         if (mode == PEEK){
                         buffer = LEX_ERROR;
                     }
-                    return (LEX_ERROR);    
+                    return (LEX_ERROR);
                     }
                 }
             break;
