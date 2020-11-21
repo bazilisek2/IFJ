@@ -19,10 +19,10 @@ void print_token(int return_value);
 
 int main() {
 
-            int k;
-            strInit(&atr);
-            #ifdef SCANNER_CHECk
-            do {
+    int k;
+    strInit(&atr);
+#ifdef SCANNER_CHECk
+    do {
                 k = get_token(GET, &e_flag, &atr);
                 printf("Precitany token: %s\n", atr.str);
                 printf("%d:  ", k);
@@ -37,11 +37,11 @@ int main() {
 
             }
             while(k != END_OF_FILE);
-            #endif
+#endif
 
-            
-            #ifdef SYNTAX_CHECK
-            int retvalue = analysis_start();
+
+#ifdef SYNTAX_CHECK
+    int retvalue = analysis_start();
             if (retvalue == 1){
                 printf("Analyza presla\n");
             }
@@ -56,49 +56,46 @@ int main() {
             else {
                 printf("Neznamy error v analyze\n");
             }
-            #endif
+#endif
 
 
-        //test tabulky
-        
-        tSymbolTable * ST;
-        tSymbolTable * GT;
-        tNode * variable;
-        tNode * variable2;
-        tParams * test;
-        ST = malloc(sizeof(tSymbolTable));
-        GT = malloc(sizeof(tSymbolTable));
-        strAddChar(&atr, 'a');
+    //test tabulky
 
-        InsertNode(ST, ST->root, &atr);
-        int returnval = InsertNode(ST, ST->root, &atr);
+    tSymbolTable * ST;
+    tSymbolTable * GT;
+    tNode * variable;
+    tNode * variable2;
+    tParams * test;
+    ST = malloc(sizeof(tSymbolTable));
+    GT = malloc(sizeof(tSymbolTable));
+    strAddChar(&atr, 'a');
 
-        variable = tableSearch(ST, ST->root, &atr);
-        
+    InsertNode(ST, ST->root, &atr);
+    int returnval = InsertNode(ST, ST->root, &atr);
 
-        //(variable->defined) = TRUE;
+    variable = tableSearch(ST, ST->root, &atr);
 
-        returnval = is_defined(ST, variable, &atr);
 
-        
-        //test pridávania parametrov
-        test = add_param(ST, ST->root, &atr);
-        test = add_param(ST, ST->root, &atr);
-        test = add_param(ST, ST->root, &atr);
+    //(variable->defined) = TRUE;
 
-        if (test != NULL){
-            printf("%d\n", variable->data.param_num);
-        }
+    returnval = is_defined(ST, variable, &atr);
 
-        printf("%d\n", variable->data.p_first->next->next->order);
 
-        test = get_param(ST, ST->root, &atr, 2);
-        if (test != NULL){
-            printf("%d\n", test->order);
-        }
-        
+    //test pridávania parametrov
+    test = add_param(ST, ST->root, &atr);
+    test = add_param(ST, ST->root, &atr);
+    test = add_param(ST, ST->root, &atr);
 
-        
+    if (test != NULL){
+        printf("%d\n", variable->data.param_num);
+    }
+
+    printf("%d\n", variable->data.p_first->next->next->order);
+
+    test = get_param(ST, ST->root, &atr, 2);
+    if (test != NULL){
+        printf("%d\n", test->order);
+    }
 
 
 
@@ -106,9 +103,12 @@ int main() {
 
 
 
-            
-        }
-        
+
+
+
+
+}
+
 
 void print_token(int return_value){
     switch (return_value){
@@ -192,7 +192,7 @@ void print_token(int return_value){
             break;
         case 41:
             printf("Token type: FLOAT_L\n");
-            break;                    
+            break;
         case 42:
             printf("Token type: STRING_LIT\n");
             break;
@@ -214,12 +214,35 @@ void print_token(int return_value){
         case 61:
             printf("Token type: END_OF_FILE\n");
             break;
-        default: 
+        case 70:
+            printf("Token type: PRINT\n");
+            break;
+        case 71:
+            printf("Token type: INT2FLOAT\n");
+            break;
+        case 72:
+            printf("Token type: LEN\n");
+            break;
+        case 73:
+            printf("Token type: SUBSTR\n");
+            break;
+        case 74:
+            printf("Token type: ORD\n");
+            break;
+        case 75:
+            printf("Token type: INPUTS\n");
+            break;
+        case 76:
+            printf("Token type: INPUTI\n");
+        case 77:
+            printf("Token type: INPUTF\n");
+            break;
+        default:
             printf("Unexpected value of token\n");
 
-        
+
 
     }
-        
+
 
 }
