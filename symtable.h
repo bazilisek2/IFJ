@@ -1,20 +1,3 @@
-/*
- *
- *  Implementace prekladace imperativniho jazyka IFJcode18
- *
- *
- *
- *  symtable.h
- *
- *
- *  xvacul30 - Jan Vaculik
- *
- *  xmensi13 - Jan Mensik
- *
- *
- *
- */
-
 #ifndef symtable_h
 #define symtable_h
 
@@ -30,7 +13,6 @@ typedef struct tParams{
 }tParams;
 
 typedef struct tReturn{
-	string * name;
 	int type;
 	int order;
 	struct tReturn* next;
@@ -70,5 +52,9 @@ tNode *tableSearch(tSymbolTable *T, tNode *active, string *key);
 int is_defined(tSymbolTable *T, tNode *active, string *key);
 tParams * add_param(tSymbolTable *T, tNode *active, string *key);
 tParams * get_param(tSymbolTable *T, tNode *active, string *key, int param_number);
+tReturn * add_return(tSymbolTable *T, tNode *active, string *key);
+tReturn * get_return(tSymbolTable *T, tNode *active, string *key, int return_number);
+void tableDelete (tSymbolTable *T,tNode *active);
+
 
 #endif /* symtable_h */
