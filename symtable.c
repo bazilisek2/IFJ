@@ -27,8 +27,8 @@ int InsertNode(tSymbolTable * T, tNode * active, string * key){
             node->defined = EMPTY;
             node->data.function = EMPTY;
             node->data.type = EMPTY;
-            node->data.param_num = EMPTY;
-            node->data.return_num = EMPTY;
+            node->data.param_num = 0;
+            node->data.return_num = 0;
             node->data.p_first = NULL;
             node->data.r_first = NULL;
 
@@ -51,8 +51,8 @@ int InsertNode(tSymbolTable * T, tNode * active, string * key){
                 node->defined = EMPTY;
                 node->data.function = EMPTY;
                 node->data.type = EMPTY;
-                node->data.param_num = EMPTY;
-                node->data.return_num = EMPTY;
+                node->data.param_num = 0;
+                node->data.return_num = 0;
                 node->data.p_first = NULL;
                 node->data.r_first = NULL;
                  
@@ -145,7 +145,7 @@ tParams * add_param(tSymbolTable *T, tNode *active, string *key){
         }
 
         else {
-            param->name = EMPTY;
+            //param->name = EMPTY;
             param->order = 1;
             param->type = EMPTY;
             param->next = NULL;
@@ -155,7 +155,7 @@ tParams * add_param(tSymbolTable *T, tNode *active, string *key){
         }
     }
 
-    //nejaky tam uĹľ je
+    //nejaky tam uz je
     else if (var->data.p_first != NULL){
       tParams * temp = var->data.p_first;
       tParams * previous = NULL;
@@ -174,7 +174,7 @@ tParams * add_param(tSymbolTable *T, tNode *active, string *key){
         }
         else {
             previous->next = temp; //napojenie
-            temp->name = EMPTY;
+            //temp->name = EMPTY;
             temp->order = order;
             temp->type = EMPTY;
             temp->next = NULL;
@@ -295,3 +295,139 @@ void tableDelete (tSymbolTable *T,tNode *active)
 	T->next = NULL;
 	T->previous = NULL;
 }
+
+
+
+//initne "zasobnik" tabuliek
+void tablelist_init(tTableList *TL){
+    TL->Last = NULL;
+}
+
+
+//prida tabulku na koniec zasobnika
+void tablelist_add(tTableList *TL, tSymbolTable *new){
+    if (TL->Last == NULL){
+        TL->Last = new;
+        TL->Global = new;
+    }
+
+    else { //v liste tabuliek uz nieco je
+        new->previous = TL->Last;
+        TL->Last = new;
+    }
+}
+
+
+//popne a znici tabulku z konca zasobnika
+void tablelist_pop(tTableList *TL){
+        tSymbolTable * temp = TL->Last;
+        TL->Last = TL->Last->previous;
+        tableDelete (temp, temp->root);
+        
+}
+
+
+//int InsertNode(tSymbolTable * T, tNode * active, string * key)
+
+
+//TRUE - podarilo sa insertnut
+//FALSE - uz tam nieco bolo
+//insertne tNode do 
+int tablelist_insert(tTableList *TL, string * key){
+    tSymbolTable * toInsert = TL->Last;
+    int returnval = InsertNode(toInsert, toInsert->root, key);
+    if (returnval == TRUE){
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
+}
+
+
+//tNode * tableSearch(tSymbolTable *T, tNode *active, string *key)
+
+
+tNode * tablelist_search(tTableList *TL, string * key){
+    tSymbolTable * Search = TL->Last;
+    tNode * found = tableSearch(Search, Search->root, key);
+    while (found == NULL){ //v prvej tabulke sa nič nenašlo
+        Search = Search->previous;
+        if (Search == NULL) { //na konci zásobníka tabuliek
+            break;
+        }
+        found = tableSearch(Search, Search->root, key);
+    }
+
+    return found;
+}
+
+void deflist_init(tDefList * deflist){
+    deflist->first = NULL;
+}
+
+int deflist_add(tDefList * deflist, int token){
+    tDef * new;
+    int count = 1;
+    if (deflist->first == NULL){
+        new = malloc(sizeof(tDef));
+        if (new == NULL){
+            return FALSE;
+        }
+        new->next = NULL;
+        new->token = token;
+        deflist->first = new;
+        deflist->count = 1;
+
+    }
+    else { //
+        count = 2;
+        tDef * active = deflist->first;
+        while(active->next != NULL){
+            active = active->next;
+            count++;
+        }
+        active->next = malloc(sizeof(tDef));
+        if (active->next == NULL){
+            return FALSE;
+        }
+        active->next->next = NULL;
+        active->next->token = token; 
+        deflist->count = count;
+    
+
+    }
+
+    return TRUE;
+}
+
+void deflist_delete(tDefList * deflist){
+    tDef * active = deflist->first;
+    tDef * temp;
+    while (active != NULL){
+        temp = active;
+        active = active->next;
+        free(temp);
+    }
+    deflist->first = NULL;
+}
+
+tDef * deflist_get(tDefList * deflist, int order){
+    tDef * active;
+    if (deflist->first == NULL){
+        return NULL;
+    }
+
+    int counter = 1;
+    active = deflist->first;
+    while (counter != order){
+        if (active->next == NULL){ //order je vyssie ako realny pocet prvkov v liste
+            return NULL;
+        }
+        active = active->next;
+        counter++;
+    }
+
+    return active;
+}
+

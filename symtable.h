@@ -6,7 +6,7 @@
 #include "str.h"
 
 typedef struct tParams{
-	string * name;
+	string name;
 	int type;
 	int order;
 	struct tParams * next;
@@ -45,6 +45,23 @@ typedef struct tSymbolTable
 	string key;
 }tSymbolTable;
 
+typedef struct tTableList{
+	tSymbolTable * Last; 
+	tSymbolTable * Global;
+}tTableList;
+
+
+typedef struct tDef{
+	int token;
+	struct tDef * next;
+}tDef;
+
+
+typedef struct tDefList{
+	struct tDef * first;
+	int count;
+}tDefList;
+
 
 void tableInit(tSymbolTable *T);
 int InsertNode(tSymbolTable * T, tNode * active, string * key);
@@ -56,5 +73,20 @@ tReturn * add_return(tSymbolTable *T, tNode *active, string *key);
 tReturn * get_return(tSymbolTable *T, tNode *active, string *key, int return_number);
 void tableDelete (tSymbolTable *T,tNode *active);
 
+//tablelist
+void tablelist_init(tTableList *TL);
+void tablelist_add(tTableList *TL, tSymbolTable *new);
+void tablelist_pop(tTableList *TL);
+int tablelist_insert(tTableList *TL, string * key);
+tNode * tablelist_search(tTableList *TL, string * key);
 
-#endif /* symtable_h */
+//deflist
+void deflist_init(tDefList * deflist);
+int deflist_add(tDefList * deflist, int token);
+void deflist_delete(tDefList * deflist);
+tDef * deflist_get(tDefList * deflist, int order);
+
+
+
+
+#endif
