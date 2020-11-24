@@ -67,6 +67,7 @@ int get_token(int mode, int * flag, string *strtmp)
     T_state state = START;
 
     char hexc[3];
+    int oprtmp=0;
     int hexo=0;
     int c;
     int i=0;
@@ -125,6 +126,7 @@ int get_token(int mode, int * flag, string *strtmp)
             }
             else if (c=='!' || c=='<' || c=='>') {
                 state = OPERATOR;
+                oprtmp = c;
                 strAddChar(strtmp,c);
             }
             else if (c=='=') {
@@ -569,12 +571,26 @@ int get_token(int mode, int * flag, string *strtmp)
                     }
                     return (NOTEQUAL);
                 }
+                else if (oprtmp =='<') {
+                    ungetc(c,stdin);
+                    if (mode == PEEK){
+                        buffer = LESS;
+                    }
+                    return (LESS);
+                } 
+                else if (oprtmp =='>') {
+                    ungetc(c,stdin);
+                    if (mode == PEEK){
+                        buffer = GREAT;
+                    }
+                    return (GREAT); 
+                }    
                 else {
                     if (mode == PEEK){
                         buffer = LEX_ERROR;
                     }
                     return (LEX_ERROR);
-                }
+                } 
 
             case COMMENT_OPERATOR:
             if (c=='/') {
