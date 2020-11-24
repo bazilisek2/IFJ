@@ -30,7 +30,7 @@ typedef enum{
 } T_state;
 
 
-static int buffer;
+static int buffer = EMPTY;
 
 //zistí, či sa ZA znakom nachádza EOL (po jeho nájdení ho tam vráti kvôli flagu, ktorý vyhodnocuje EOL pred)
 //TODO: ako EOL sa ráta aj viacriadkový komentár
@@ -268,6 +268,12 @@ int get_token(int mode, int * flag, string *strtmp)
                             buffer = INT2FLOAT;
                         }
                         return (INT2FLOAT);
+                    }
+                    else if (strCmpConstStr(strtmp,"float2int")==0) {
+                        if (mode == PEEK){
+                            buffer = FLOAT2INT;
+                        }
+                        return (FLOAT2INT);
                     }
                     else if (strCmpConstStr(strtmp,"len")==0) {
                         if (mode == PEEK){

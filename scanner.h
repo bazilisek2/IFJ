@@ -19,8 +19,8 @@
 #define L_BRACKET1 23
 #define R_BRACKET1 24
 #define COMA 25
-#define UNDERSCORE 26
-#define UNDERLINE 27
+#define UNDERSCORE 26 //;
+#define UNDERLINE 27 // _
 #define ELSE 30
 #define FLOAT64 31 //type float
 #define FOR 32
@@ -30,7 +30,7 @@
 #define RETURN 36
 #define INT 40
 #define FLOAT_L 41
-#define STRING_LIT 42
+#define STRING_LIT 42 //"string"
 #define STRING_T 43 //type string
 #define INT_T 44 // type int
 #define EOL 50
@@ -45,6 +45,8 @@
 #define INPUTS 75
 #define INPUTI 76
 #define INPUTF 77
+#define FLOAT2INT 78
+
 int find_eol();
 int get_token(int mode, int * flag, string *strtmp);
 
