@@ -173,6 +173,12 @@ void print_token(int return_value){
         case 4:
             printf("Token type: FLOAT_N\n");
             break;
+        case 8:
+            printf("Token type: GREAT\n");
+            break;    
+        case 9:
+            printf("Token type: LESS\n");
+            break;    
         case 10:
             printf("Token type: PLUS\n");
             break;
