@@ -4,6 +4,8 @@
 #include "str.h"
 
 #define FLOAT_N 4 //cislo float
+#define GREAT 8
+#define LESS 9
 #define PLUS 10
 #define MINUS 11
 #define MULTIPLICATION 12
