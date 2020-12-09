@@ -1,3 +1,14 @@
+/****
+ * IFJ Projekt 2020
+ * 
+ * Autori:
+ * xbella01 - Magdaléna Bellayová 
+ * 
+ * Súhrn: Práca so zásobníkom  
+ * 
+ * */
+
+
 #ifndef stack_h
 #define stack_h
 
@@ -7,7 +18,7 @@
 #include "stack.h"
 #include "error.h"
 
-
+//inicializacia stacku
 void init_stack(tStack *S)
 {
 	S->top = NULL;
@@ -16,6 +27,7 @@ void init_stack(tStack *S)
 	push_stack(S, DOLLAR, 0, &atr);
 }
 
+//vlozenie na vrchol zasobniku
 void push_stack(tStack *S, int symbol, int datatype, string* value)
 {
 	tStack_element* new_item = (tStack_element*)malloc(sizeof(tStack_element));
@@ -31,6 +43,7 @@ void push_stack(tStack *S, int symbol, int datatype, string* value)
 	S->top = new_item;
 }
 
+//odstranenie vrchneho prvku zo zasobnika
 void pop_stack(tStack *S)
 {
 	if (S->top == NULL)
@@ -45,16 +58,19 @@ void pop_stack(tStack *S)
 	}
 }
 
+//vracia vrchol zasobnika
 tStack_element* top_stack(tStack *S)
 {
 	return S->top;
 }
 
+//vracia či je symbol term
 int isterm_stack(int symbol)
 {
 	return (symbol < TOKEN_MAX);
 }
 
+//vracia najvrchnejsi term
 tStack_element* topterm_stack(tStack *S)
 {
 	tStack_element* tmp = S->top;
@@ -68,7 +84,7 @@ tStack_element* topterm_stack(tStack *S)
 	return NULL;
 }
 
-
+//vlozi prvok za vrchný term
 void insertbeforetopterm_stack(tStack *S, int symbol, int datatype, string* value)
 {
 	tStack_element  *tmp = S->top;
@@ -108,6 +124,7 @@ void insertbeforetopterm_stack(tStack *S, int symbol, int datatype, string* valu
 	}
 }
 
+//vyprazdni stack
 void free_stack(tStack *S)
 {
 	while (S->top)
@@ -116,6 +133,7 @@ void free_stack(tStack *S)
 	}
 }
 
+//vrati ci je stack prazdny
 bool empty_stack(tStack* S)
 {
 	return(S->top==0);
