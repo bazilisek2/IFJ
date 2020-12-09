@@ -1,3 +1,14 @@
+/****
+ * IFJ Projekt 2020
+ * 
+ * Autori:
+ * xzimme03 - Marián Zimmermann 
+ * 
+ * Súhrn: Lexikálny analyzátor (scanner) 
+ * Prechádza v cykle while znaky a vracia ich ako tokeny ktoré sa rozlíšia vo switche 
+ * 
+ * 
+ * */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -54,7 +65,7 @@ int find_eol(){
 }
 
 
-
+// Hlavná funkcia lexikálneho analyzátoru, prechádza postupne znaky zo stdin a vracia tokeny priradené switchom
 //v mode GET token buffer rovno vrati, PEEK ho ulozi a vrati pri dalsom zavolani
 int get_token(int mode, int * flag, string *strtmp)
 
@@ -82,26 +93,26 @@ int get_token(int mode, int * flag, string *strtmp)
 
     T_state state = START;
 
-    char hexc[3];
-    int oprtmp=0;
-    int hexo=0;
-    int c;
-    int i=0;
-    int floatcheck=0;
+    char hexc[3];   // pomocná premenná do ktorej sa ukladá hexadecimálna hodnota pri stringoch
+    int oprtmp=0;   // pomocná premenná na oddelenie operátorov < a >
+    int hexo=0;     // pomocná premenná pri premene z hexadecimálnej hodnoty
+    int c;          // pomocná premenná pomocou ktorej sa čítaju znaky zo stdin
+    int i=0;        // pomocné počítadlo
+    int floatcheck=0;   // pomocná premenná ktorá zisťuje či sa za . vo floate nachádza číslo
     *flag = NO_EOL;
 
-    strClear(strtmp);
+    strClear(strtmp);   // vymazanie obsahu premennej do ktorej sa ukladajú hodnoty tokenov
 
 
     while (1)
     {
 
-        c = fgetc(stdin);
+        c = fgetc(stdin);   // načítavanie znakov
 
         switch (state)
         {
-            case START:
-            if (isspace(c)) {
+            case START:     // počiatočný stav automatu 
+            if (isspace(c)) {   // ignorovanie bielych miest
                 if (c == '\n'){
                     *flag = EOL_FOUND;
                 }
@@ -113,7 +124,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     }
                 return EOL;
             }
-            else if (c=='/') {
+            else if (c=='/') {  // môže sa jednať o komentár alebo delenie, zmeníme stav
                 state = COMMENT_OPERATOR;
             }
             else if (c==EOF) {
@@ -144,12 +155,12 @@ int get_token(int mode, int * flag, string *strtmp)
                     }
                 return (MULTIPLICATION);
             }
-            else if (c=='!' || c=='<' || c=='>') {
+            else if (c=='!' || c=='<' || c=='>') {  // zisťujeme o aký operátor sa jedná zmení sa stav na OPERATOR
                 state = OPERATOR;
-                oprtmp = c;
+                oprtmp = c;     // v prípade, že sa jedná o samotné < > 
                 strAddChar(strtmp,c);
             }
-            else if (c=='=') {
+            else if (c=='=') {  // zisťujeme či sa jedná o priradenie alebo operátor, zmení sa stav na EQ
                 state = EQ;
                 strAddChar(strtmp,c);
             }
@@ -195,22 +206,22 @@ int get_token(int mode, int * flag, string *strtmp)
                     }
                 return (UNDERSCORE);
             }
-            else if (c=='_') {
+            else if (c=='_') {      // zisťujeme či sa jedná o podtržítko alebo ID, zmení sa stav na ID_OR_UNDERLINE
                 state = ID_OR_UNERLINE;
                 strAddChar(strtmp,c);
             }
-            else if (isalpha(c)) {
+            else if (isalpha(c)) {      // zisťujeme či sa jedná o keyword alebo ID, zmení sa stav na ID_KW
                 state = ID_KW;
                 strAddChar(strtmp,c);
             }
 
-            else if (c=='"') {
+            else if (c=='"') {      // začiatok stringu, zmena stavu na STRING
                 state = STRING;
             }
-            else if (c==':') {
+            else if (c==':') {      // možný znak assignu, zmena stavu na COLON
                 state = COLON;
             }
-            else if (isdigit(c)) {
+            else if (isdigit(c)) {  // začiatok číslo, pokiaľ začína 0 zisťujeme či sa za ňou nenachádzajú nadbytočné čísla, inak zmena stavu na NUMBER
                 strAddChar(strtmp,c);
                 if (c=='0') { 
                     state = ZEROCHECK;
@@ -219,7 +230,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     state = NUMBER;
                 }
             }
-            else {
+            else {          // ak znak ničomu nevyhovie jedná sa o lexikálny error
                 if (mode == PEEK){
                     buffer = LEX_ERROR;
                     strCopyString(&atr_buffer, strtmp);
@@ -228,16 +239,16 @@ int get_token(int mode, int * flag, string *strtmp)
             }
             break;
 
-            case ID_KW:
-                if (c=='_') {
+            case ID_KW: 
+                if (c=='_') {   // ak sa vyskytne _ jedná sa o ID
                     state = ID;
                 }
-                else if (isalnum(c)) {
+                else if (isalnum(c)) {  // pokračuje sa v čítaní
                     strAddChar(strtmp,c);
                 }
                 else {
                     ungetc(c,stdin);
-                    if (strCmpConstStr(strtmp,"else")==0) {
+                    if (strCmpConstStr(strtmp,"else")==0) {     // keď sa dostaneme na koniec povolených znakov testujem zhodu s keywords ak nie, jedná sa od ID 
                         if (mode == PEEK){
                             buffer = ELSE;
                             strCopyString(&atr_buffer, strtmp);
@@ -364,7 +375,7 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
                 break;
 
-            case ID_OR_UNERLINE:
+            case ID_OR_UNERLINE:       // ak následujúci znak je číslo alebo písmeno alebo _ jedna sa od ID inak to je UNDERLINE
                 if (c == '_' || isalnum(c)) {
                     strAddChar(strtmp,c);
                     state = ID;
@@ -381,7 +392,7 @@ int get_token(int mode, int * flag, string *strtmp)
 
 
 
-            case ID:
+            case ID:       // načítavanie znakov pokiaľ sa nedostaneme na koniec ID 
                 if (c == '_' || isalnum(c)) {
                     strAddChar(strtmp,c);
                 }
@@ -394,18 +405,18 @@ int get_token(int mode, int * flag, string *strtmp)
                     return (IDENTIFIER);
                 }
             break;
-            case ZEROCHECK:
+            case ZEROCHECK:     // ak sa za prvou nulou nachádzajú ďalšie čísla jedná sa o lex error
                 if (isdigit(c)) {
                     if (mode == PEEK){
                         buffer = LEX_ERROR;
                     }
                     return (LEX_ERROR);
                 }
-                else if (c=='.'){
+                else if (c=='.'){   // po prečítaní . zmena stavu na FLOAT
                     strAddChar(strtmp,c);
                     state = FLOAT;
                 }
-                else {
+                else {      // ak sa za ňou nič nenachádza jedná sa o číslo vráti sa INT
                     ungetc(c, stdin);
                     if (mode == PEEK){
                         buffer = INT;
@@ -415,19 +426,19 @@ int get_token(int mode, int * flag, string *strtmp)
                 } 
             break;       
             case NUMBER:
-                if (isdigit(c)) {
+                if (isdigit(c)) {   // načítavanie znakov do stringu
                     strAddChar(strtmp,c);
                     state = NUMBER;
                 }
-                else if (c=='.') {
+                else if (c=='.') {  // . značí zmenu stavu na float
                     strAddChar(strtmp,c);
                     state = FLOAT;
                 }
-                else if (c == 'E' || c == 'e') {
+                else if (c == 'E' || c == 'e') {    // E e označujú exponent, treba pozrieť ak je zadané znamienko, či sú za ním čísla
                     strAddChar(strtmp, c);
                     state = EXPONENT_SIGN;
                 }
-                else {
+                else {      // sme na konci integeru, vrátime INT
                     ungetc(c, stdin);
                     if (mode == PEEK){
                         buffer = INT;
@@ -437,16 +448,16 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
             break;
 
-            case FLOAT:
+            case FLOAT:     // načítavanie ďalších čísiel
                 if (isdigit(c)) {
                     strAddChar(strtmp,c);
                     floatcheck++;
                 }
-                else if (c == 'E' || c == 'e') {
+                else if (c == 'E' || c == 'e') {    // E e označujú exponent, treba pozrieť ak je zadané znamienko, či sú za ním čísla
                     strAddChar(strtmp, c);
                     state = EXPONENT_SIGN;
                 }
-                else {
+                else {      // ak je za bodkou aspoň 1 číslo a sme na konci jedná sa float, inak error
                     if (floatcheck>0) {
                         ungetc(c,stdin);
                         if (mode == PEEK){
@@ -464,16 +475,16 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
             break;
 
-            case EXPONENT_SIGN:
-                if (isdigit(c)) {
+            case EXPONENT_SIGN: 
+                if (isdigit(c)) {   // pokiaľ nie je znamienko pokračujeme do statu EXPONENT
                     strAddChar(strtmp,c);
                     state = EXPONENT;
                 }
-                else if (c=='+' || c=='-') {
+                else if (c=='+' || c=='-') {    // v prípade znamienka zisťujeme či je za ním číslo
                     strAddChar(strtmp,c);
                     state = EXPONENT_CHECK;
                 }
-                else {
+                else {      // exponent bez hodnoty, lex error
                     if (mode == PEEK){
                         buffer = LEX_ERROR;
                         strCopyString(&atr_buffer, strtmp);
@@ -482,7 +493,7 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
              break;
 
-            case EXPONENT_CHECK:
+            case EXPONENT_CHECK:    // ak je za znamienkom číslo pokračujeme do stavu exponent inak lex error
                 if (isdigit(c)) {
                     strAddChar(strtmp,c);
                     state = EXPONENT;
@@ -496,7 +507,7 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
             break;
 
-            case EXPONENT:
+            case EXPONENT:      // načítavanie čísiel do exponentu, vracia FLOAT_N
                 if (isdigit(c)) {
                     strAddChar(strtmp, c);
                 }
@@ -512,27 +523,27 @@ int get_token(int mode, int * flag, string *strtmp)
 
 
             case STRING:
-                if (c=='"') {
+                if (c=='"') {   // úvodzovky značia koniec stringov
                     if (mode == PEEK){
                         buffer = STRING_LIT;
                         strCopyString(&atr_buffer, strtmp);
                     }
                     return (STRING_LIT);
                 }
-                else if (c=='\\') {
+                else if (c=='\\') { // presun do escape sekvencie
                     state = ESCAPE_SEQ;
                 }    
-                else if (c==' ') {
+                else if (c==' ') {  // zápis medzery do stringu pomocou ascii hodnoty
                     strAddChar(strtmp,'\\');
                     strAddChar(strtmp,'0');
                     strAddChar(strtmp,'3');
                     strAddChar(strtmp,'2');
                     state = STRING;
                 }                   
-                else if (c>31) {
+                else if (c>31) {    // pokiaľ je hodnota znaku väčšia ako 31 môže sa zapísať
                     strAddChar(strtmp,c);
                 }
-                else  {
+                else  {     // všetko ostatné je neplatný znak, lex error
                     if (mode == PEEK){
                         buffer = LEX_ERROR;
                         strCopyString(&atr_buffer, strtmp);
@@ -541,7 +552,7 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
                 break;
 
-            case ESCAPE_SEQ:
+            case ESCAPE_SEQ:    // načítanie špeciálnych znakov pomocou ich ascii hodnoty
                 if (c=='t'){
                     strAddChar(strtmp,'\\');
                     strAddChar(strtmp,'0');
@@ -570,7 +581,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     strAddChar(strtmp,'4');
                     state = STRING;
                 }
-                else if (c=='x') {
+                else if (c=='x') {      // začiatok hexadecimálneho zápisu
                     state = STRING_HEX;
                 }
                 else {
@@ -583,19 +594,19 @@ int get_token(int mode, int * flag, string *strtmp)
                 break;
 
             case STRING_HEX:
-                if (i<2 && isxdigit(c)) {
+                if (i<2 && isxdigit(c)) {   // musíme načítať 2 hexa čísla
                     hexc[i]=c;
                     i++;
 
                 }
-                else if (i<2) {
+                else if (i<2) {     // pokiaľ sme nenačítali 2 hexa čísla, neplatná forma, lex error
                     if (mode == PEEK){
                         buffer = LEX_ERROR;
                     }
                     return (LEX_ERROR);
                 }
-                else {
-                    hexc[i] = '\0';
+                else {  // konvertovanie hexadecimálnej hodnoty na číslo, stav za zmení znova na STRING
+                    hexc[i] = '\0'; 
                     hexo = strtol(hexc,NULL,16);
                     strAddChar(strtmp,hexo);
                     i=0;
@@ -604,7 +615,7 @@ int get_token(int mode, int * flag, string *strtmp)
                 }
                 break;
 
-            case EQ:
+            case EQ:    // ak sa načíta ďalšie = jedná sa o operátor EQUAL inak to je ASSIGN
                 if (c=='=') {
                     if (mode == PEEK){
                         buffer = EQUAL;
@@ -621,7 +632,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     return (ASSIGN);
                 }
 
-            case COLON:
+            case COLON: // ak je za : = jedná sa o definíciu, inak lex error
                 if (c=='=') {
                     if (mode == PEEK){
                         buffer = DEFINITION;
@@ -640,7 +651,7 @@ int get_token(int mode, int * flag, string *strtmp)
 
 
 
-            case OPERATOR:
+            case OPERATOR:  // ak je za operátorom = vráti to daný operátor
                 strAddChar(strtmp,c);
                 if (strCmpConstStr(strtmp,"<=")==0) {
                     if (mode == PEEK){
@@ -663,7 +674,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     }
                     return (NOTEQUAL);
                 }
-                else if (oprtmp =='<') {
+                else if (oprtmp =='<') {    // pokiaľ boli načítané < alebo > a nie je za nimi =, vráti to hodnoty LESS a GREAT
                     ungetc(c,stdin);
                     if (mode == PEEK){
                         buffer = LESS;
@@ -679,7 +690,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     }
                     return (GREAT); 
                 }    
-                else {
+                else {      // inak error
                     if (mode == PEEK){
                         buffer = LEX_ERROR;
                         strCopyString(&atr_buffer, strtmp);
@@ -687,7 +698,7 @@ int get_token(int mode, int * flag, string *strtmp)
                     return (LEX_ERROR);
                 } 
 
-            case COMMENT_OPERATOR:
+            case COMMENT_OPERATOR:  // ak načítame ďalší / jedná sa o Line comment ak * jedná sa o block comment, inak sa jedná o delenie
             if (c=='/') {
                 state = LINE_COMMENT;
             }
@@ -704,13 +715,13 @@ int get_token(int mode, int * flag, string *strtmp)
             }
             break;
 
-            case LINE_COMMENT:
+            case LINE_COMMENT:  // ignorujeme znaky kým neprečítame koniec riadku
             if (c == '\n') {
                 state = START;
             }
             break;
 
-            case BLOCK_COMMENT:
+            case BLOCK_COMMENT: // ignorujú sa znaky kým sa neprečíta sekvencia */
             if (c=='*') {
                 state = BLOCK_COMMENT_END;
             }
@@ -718,7 +729,7 @@ int get_token(int mode, int * flag, string *strtmp)
                 *flag = EOL_FOUND;
             }
 
-            if (c==EOF) {
+            if (c==EOF) {   // ak prečítame EOF, nekonečný komentár, lex error
                if (mode == PEEK){
                     buffer = LEX_ERROR;
                     strCopyString(&atr_buffer, strtmp);
