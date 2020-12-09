@@ -1,3 +1,4 @@
+// súbor sme prevzali z materiálov k ifj
 #ifndef STR_H
 #define STR_H
 
