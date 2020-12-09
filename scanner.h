@@ -1,3 +1,15 @@
+/****
+ * IFJ Projekt 2020
+ * 
+ * Autori:
+ * xzimme03 - Marián Zimmermann 
+ * 
+ * Súhrn: Lexikálny analyzátor (scanner) 
+ * Prechádza v cykle while znaky a vracia ich ako tokeny ktoré sa rozlíšia vo switche 
+ * 
+ * 
+ * */
+
 #ifndef SCANNER_H
 #define SCANNER_H
 
