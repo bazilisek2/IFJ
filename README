@@ -1,0 +1,11 @@
+ic20int - referencni interpret ciloveho jazyka IFJcode20
+verze 2020-10-06
+
+Prubezne doplnovane informace najdete na Wiki predmetu IFJ na strance ic20int.
+
+CHANGES:
+  * 2020-10-06:
+    * opraven preklep v napovede
+  * 2020-10-05:
+    * zverejnena prvni verze interpretu (upravena kompatibilita s jazykem Go hlavne u instrukci READ, WRITE, IDIV atd.)
+
