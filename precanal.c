@@ -1,3 +1,14 @@
+/****
+ * IFJ Projekt 2020
+ * 
+ * Autori:
+ * xbella01 - Magdaléna Bellayová 
+ * 
+ * Súhrn: Precedenčná analýza
+ * Prechádza tokeny vo výraze a uplatňuje na nich pravidlá  
+ * 
+ * */
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdarg.h>
@@ -13,16 +24,18 @@
 #include "symtable.h"
 #include "error.h"
 
-#define RULE_COUNTER 14
+#define RULE_COUNTER 14 //pocet termov v tabulke
 #define BOOL 0
 
+//enumeracia stavov z precedencnej tabulky -rovna sa, vacsi, mensi, error
 enum {
 	EQ,
 	LO,
 	HI,
 	ER
 };
-        
+
+//precedencna tabulka        
 const char prece_table[RULE_COUNTER][RULE_COUNTER] = {
 /*         +   -   *   /   (   )   id  <   >   <=  >=  ==  !=  $*/
 /* +  */ { HI, HI, LO, LO, LO, HI, LO, HI, HI, HI, HI, HI, HI, HI },
@@ -41,10 +54,12 @@ const char prece_table[RULE_COUNTER][RULE_COUNTER] = {
 /* $  */ { LO, LO, LO, LO, LO, ER, LO, LO, LO, LO, LO, LO, LO, ER },
 };
 
-int result_type;
-string atr;
-int EOL_flag;
+int result_type; //vysledny typ
+string atr; //atribut v ktorom sa uklada hodnota
+int EOL_flag; //flag konca riadka
 
+
+//hladanie v precedencnej tabulke, pomocou vrchnej hodnoty na stacku (stlpec) a tokenu zo vstupu (riadok)
 int prectable_search(tStack *S,int token)
 {
 
@@ -161,6 +176,7 @@ int prectable_search(tStack *S,int token)
 	return prece_table[r][c];
 }
 
+//uplatnovanie pravidiel
 tStack_element* rules_apl(tStack* S, int count)
 {
 	tStack_element* result = NULL;
@@ -364,6 +380,7 @@ tStack_element* rules_apl(tStack* S, int count)
 	return result;	
 }
 
+//hladanie hodnot v precedenčnej tabulke a podla stavu z tabulky nasledne uplatnovanie pravidiel
 int expression(int* flag,tTableList* TL)
 {
 	bool correct = FALSE;
